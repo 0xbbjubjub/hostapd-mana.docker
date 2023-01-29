@@ -4,7 +4,7 @@ pemdir=/data/pems
 server_cert=$pemdir/server_cert.pem
 private_key=$pemdir/private_key.pem
 credout_file=/data/hostapd.credout
-interface=wlp2s0
+interface=wlo1
 
 if ! [ -e $server_cert ]; then
   echo "No certificates found in $pemdir!"
