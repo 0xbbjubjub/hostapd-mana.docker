@@ -1,0 +1,9 @@
+services:
+  hostapd-mana:
+    image: ghcr.io/bbjubjub2494/hostapd-mana.docker
+    cap_add:
+      - net_admin
+      - net_raw
+    network_mode: host
+    stdin_open: true
+    tty: true
