@@ -16,7 +16,7 @@ Yes, you can run it on your Raspberry Pi!
 
 ## Installation
 ```sh
-sudo docker run --cap-add net_admin --cap-add net_raw --network=host -ti ghcr.io/bbjubjub2494/hostapd-mana.docker
+docker run --cap-add net_admin --cap-add net_raw --network=host -ti ghcr.io/bbjubjub2494/hostapd-mana.docker
 ```
 
 ## Usage
