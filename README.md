@@ -1,4 +1,4 @@
-# I dockerized hostapd-mana
+# I containerized hostapd-mana
 [![built with Nix](https://builtwithnix.org/badge.svg)](https://builtwithnix.org)
 
 `hostapd-mana.docker` is a
