@@ -36,7 +36,7 @@
 
       herculesCI = herculesCI @ {lib, ...}: {
         onPush = lib.optionalAttrs (herculesCI.config.repo.branch == "master") {
-          publishContainer.outputs.effects.publishContainer = withSystem ({
+          publishContainer.outputs.effects.publishContainer = withSystem "x86_64-linux" ({
             hci-effects,
             inputs',
             pkgs,
