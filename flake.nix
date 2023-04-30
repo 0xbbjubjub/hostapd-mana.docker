@@ -34,29 +34,29 @@
       hercules-ci.flake-update.enable = true;
       hercules-ci.flake-update.when.dayOfWeek = "Sat";
 
-      herculesCI = herculesCI @ {
-        hci-effects,
-        inputs',
-        lib,
-        pkgs,
-        ...
-      }: let
-        inherit (inputs'.nix2container.packages) skopeo-nix2container;
-      in {
+      herculesCI = herculesCI @ {lib, ...}: {
         onPush = lib.optionalAttrs (herculesCI.config.repo.branch == "master") {
-          publishContainer.outputs.effects.publishContainer = hci-effects.mkEffect {
-            inputs = [pkgs.podman skopeo-nix2container];
-            secretsMap.password = "ghcr-publish-token";
-            effectScript = ''
-              readSecretString password .token | skopeo login ghcr.io -u bbjubjub2494 --password-stdin
-              skopeo --insecure-policy copy nix:${self.packages.x86_64-linux.default} docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-x86_64-linux
-              skopeo --insecure-policy copy nix:${self.packages.aarch64-linux.default} docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-aarch64-linux
-              podman manifest create hostapd-mana \
-                docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-x86_64-linux \
-                docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-aarch64-linux
-              podman manifest push hostapd-mana ghcr.io/bbjubjub2494/hostapd-mana.docker:latest
-            '';
-          };
+          publishContainer.outputs.effects.publishContainer = withSystem ({
+            hci-effects,
+            inputs',
+            pkgs,
+            ...
+          }: let
+            inherit (inputs'.nix2container.packages) skopeo-nix2container;
+          in
+            hci-effects.mkEffect {
+              inputs = [pkgs.podman skopeo-nix2container];
+              secretsMap.password = "ghcr-publish-token";
+              effectScript = ''
+                readSecretString password .token | skopeo login ghcr.io -u bbjubjub2494 --password-stdin
+                skopeo --insecure-policy copy nix:${self.packages.x86_64-linux.default} docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-x86_64-linux
+                skopeo --insecure-policy copy nix:${self.packages.aarch64-linux.default} docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-aarch64-linux
+                podman manifest create hostapd-mana \
+                  docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-x86_64-linux \
+                  docker://ghcr.io/bbjubjub2494/hostapd-mana.docker:latest-aarch64-linux
+                podman manifest push hostapd-mana ghcr.io/bbjubjub2494/hostapd-mana.docker:latest
+              '';
+            });
         };
       };
     });
