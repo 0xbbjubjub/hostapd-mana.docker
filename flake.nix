@@ -34,18 +34,17 @@
       hercules-ci.flake-update.enable = true;
       hercules-ci.flake-update.when.dayOfWeek = "Sat";
 
-      flake.effects = withSystem "x86_64-linux" (
-        {
-          self',
-          inputs',
-          pkgs,
-          hci-effects,
-          system,
-          ...
-        }: let
-          inherit (inputs'.nix2container.packages) skopeo-nix2container;
-        in {
-          publishContainer = hci-effects.mkEffect {
+      herculesCI = herculesCI @ {
+        hci-effects,
+        inputs',
+        lib,
+        pkgs,
+        ...
+      }: let
+        inherit (inputs'.nix2container.packages) skopeo-nix2container;
+      in {
+        onPush = lib.optionalAttrs (herculesCI.config.repo.branch == "master") {
+          publishContainer.outputs.effects.publishContainer = hci-effects.mkEffect {
             inputs = [pkgs.podman skopeo-nix2container];
             secretsMap.password = "ghcr-publish-token";
             effectScript = ''
@@ -58,7 +57,7 @@
               podman manifest push hostapd-mana ghcr.io/bbjubjub2494/hostapd-mana.docker:latest
             '';
           };
-        }
-      );
+        };
+      };
     });
 }
